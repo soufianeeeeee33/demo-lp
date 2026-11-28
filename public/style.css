@@ -195,8 +195,7 @@ legend { padding: 0; }
 }
 .slides::-webkit-scrollbar { display: none; }
 .slide { flex: 0 0 100%; scroll-snap-align: center; aspect-ratio: 5 / 4; overflow: hidden; }
-.slide img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; }
-.slide[data-slide="all"] img { object-position: 50% 45%; }
+.slide img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
 .dots { position: relative; z-index: 1; display: flex; justify-content: center; gap: 6px; padding: 12px 0 2px; }
 .dot { width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
 .dot::before {
@@ -277,10 +276,10 @@ html[lang="ar"] .acc-btn { font-weight: 600; }
   content: ""; position: absolute; left: 0; right: 0; bottom: -12px; height: 12px;
   background: radial-gradient(circle at 8px 0, transparent 7px, var(--color-white) 7.5px) 0 0 / 16px 12px repeat-x;
 }
-.tk-head { text-align: center; padding-bottom: 12px; border-bottom: 1px dashed var(--color-text); }
+.tk-head { text-align: center; padding-bottom: 12px; }
 .tk-head img { height: 22px; width: auto; margin: 0 auto 6px; }
 .tk-title { font-family: var(--mono); font-size: 12px; font-weight: 400; letter-spacing: 0.02em; line-height: 1.5; }
-.tk-sec { padding: 14px 0; border-bottom: 1px dashed var(--color-text); }
+.tk-sec { padding: 14px 0; }
 .tk-label { float: inline-start; width: 100%; margin: 0 0 10px; font-family: var(--mono); font-weight: 700; font-size: 12.5px; letter-spacing: 0.08em; }
 .tk-label + * { clear: both; }
 html[lang="ar"] .tk-label, html[lang="ar"] .tk-title { letter-spacing: 0; }
@@ -387,6 +386,54 @@ html[lang="ar"] .seg label { letter-spacing: 0; }
 .seg--flavor:has(input[value="mixedBerry"]:checked) { --seg-color: var(--vibrant-coral); }
 .seg.has-error { border-color: var(--coral-ink); box-shadow: 0 0 0 2px rgba(184, 55, 46, 0.15); }
 
+/* Deux cartes séparées : produit, puis coordonnées */
+.ticket + .ticket { margin-top: 34px; }
+.ticket--info { padding-top: 10px; }
+
+/* Format : poids + prix sur deux lignes (3 options) */
+.seg--pack label { min-height: 56px; padding: 8px 4px; }
+.seg-two { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.seg-two b { font-size: 15px; font-weight: 700; }
+.seg-two small { font-size: 12px; font-weight: 500; letter-spacing: -0.02em; opacity: 0.8; }
+
+/* Mix : un compteur par goût */
+.mix-hint { margin-bottom: 10px; font-family: var(--body); font-size: 13px; color: var(--color-text-muted); }
+.mix { border: 1px solid rgba(53, 52, 52, 0.226); border-radius: 10px; overflow: hidden; font-family: var(--body); }
+.mix-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 56px; padding: 6px 8px 6px 14px;
+  transition: background-color 180ms var(--ease);
+}
+[dir="rtl"] .mix-row { padding: 6px 14px 6px 8px; }
+.mix-row + .mix-row { border-top: 1px solid rgba(53, 52, 52, 0.12); }
+.mix-name { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: -0.02em; }
+html[lang="ar"] .mix-name { letter-spacing: 0; }
+.mix-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.mix-row[data-flavor="unflavored"] { --fl: var(--grey-flavor); }
+.mix-row[data-flavor="vanilla"] { --fl: var(--tan); }
+.mix-row[data-flavor="mixedBerry"] { --fl: var(--vibrant-coral); }
+.mix-dot { background: var(--fl); }
+.mix-row.is-on { background: color-mix(in srgb, var(--fl) 18%, #fff); }
+.stepper { display: inline-flex; align-items: center; gap: 4px; }
+.step-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--color-border-strong); background: #fff; color: var(--color-text);
+  font-family: var(--body); font-size: 22px; line-height: 1; cursor: pointer;
+  display: grid; place-items: center;
+  transition: transform 160ms var(--ease), opacity 160ms var(--ease);
+}
+.step-btn[data-step="1"] { background: var(--color-text); border-color: var(--color-text); color: #fff; }
+.step-btn:hover:not(:disabled) { transform: scale(1.06); }
+.step-btn:active:not(:disabled) { transform: scale(0.92); }
+.step-btn:focus-visible { outline: 2px solid var(--vibrant-coral); outline-offset: 2px; }
+.step-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.step-val { min-width: 28px; text-align: center; font-family: var(--display); font-weight: 700; font-size: 19px; font-variant-numeric: tabular-nums; }
+.mix-sum { margin-top: 10px; font-size: 13px; font-weight: 700; }
+.mix.has-error { border-color: var(--coral-ink); box-shadow: 0 0 0 2px rgba(184, 55, 46, 0.15); }
+@media (prefers-reduced-motion: no-preference) {
+  #mix-sec:not([hidden]) { animation: fade-in 320ms var(--ease) both; }
+}
+
 .flavor-slot + .flavor-slot { margin-top: 12px; }
 .slot-label { margin-bottom: 6px; font-size: 12.5px; font-weight: 700; }
 @media (prefers-reduced-motion: no-preference) {
@@ -417,15 +464,17 @@ html[lang="ar"] .seg label { letter-spacing: 0; }
 .form-status { margin-top: 10px; font-family: var(--body); font-size: 13.5px; font-weight: 600; color: var(--coral-ink); }
 .order-btn { width: 100%; min-height: 54px; margin-top: 14px; font-family: var(--body); font-size: 16px; }
 .fine { margin-top: 10px; text-align: center; font-family: var(--body); font-size: 12px; color: var(--color-text-muted); }
+.fine--privacy { margin-top: 4px; font-size: 11.5px; opacity: 0.85; }
 
 /* Confirmation */
 .success { outline: none; text-align: center; }
-.ok-mark { display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--vibrant-coral); }
-.ok-mark svg { width: 26px; height: 26px; fill: none; stroke: var(--color-text); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-.ok-title { margin-top: 12px; font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -0.02em; }
+/* Confirmation : vert « succès » */
+.ok-mark { display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: #2e9e5b; box-shadow: 0 0 0 6px rgba(46, 158, 91, 0.15), 0 10px 22px rgba(46, 158, 91, 0.25); }
+.ok-mark svg { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.ok-title { margin-top: 12px; font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -0.02em; color: #1f7a43; }
 html[lang="ar"] .ok-title { letter-spacing: 0; }
 .ok-text { margin-top: 6px; font-family: var(--body); color: var(--color-text-muted); font-size: 14px; }
-.success .tk-lines { margin-top: 14px; border-top: 1px dashed var(--color-text); text-align: start; }
+.success .tk-lines { margin-top: 14px; text-align: start; }
 .ghost-btn {
   width: 100%; min-height: 50px; margin-top: 16px;
   border: 1px solid var(--color-text); border-radius: 999px; background: transparent;
@@ -467,6 +516,11 @@ html[lang="ar"] .ok-title { letter-spacing: 0; }
 }
 .acc-btn:hover { color: var(--coral-ink); }
 .acc-btn:active { opacity: 0.6; }
+/* Avis : titre fixe, section toujours ouverte */
+.acc-btn--static, .acc-btn--static:hover { cursor: default; color: var(--color-text); }
+.acc-btn--static:active { opacity: 1; }
+.acc h2.acc-btn--static { font-size: 17px; font-weight: 500; }
+html[lang="ar"] .acc h2.acc-btn--static { font-weight: 600; }
 /* chevron (v) qui pivote à l'ouverture */
 .acc-icon {
   width: 11px; height: 11px; flex: none; margin-inline-end: 4px;
@@ -568,6 +622,48 @@ html[lang="ar"] .rich h3 { letter-spacing: 0; font-size: 15px; }
 
   .sticky-cta { display: none; }
 }
+
+/* =====================================================================
+   ANIMATIONS (uniquement transform et opacity ; désactivées si le
+   téléphone demande de réduire les animations)
+   ===================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  /* 1. Arrivée de la page : photo, blocs de couleur, puis textes l'un après l'autre */
+  .gallery .slides { animation: photo-in 900ms var(--ease) both; }
+  .gallery-coral { animation: block-in-start 1000ms var(--ease) 120ms both; }
+  .gallery-tan { animation: block-in-end 1000ms var(--ease) 60ms both; }
+  .info > * { animation: rise-in 700ms var(--ease) both; }
+  .info > .kicker { animation-delay: 180ms; }
+  .info > .title { animation-delay: 260ms; }
+  .info > .highlights { animation-delay: 360ms; }
+  .info > .sub { animation-delay: 430ms; }
+  .info > .price-line { animation-delay: 490ms; }
+  .info > .trust { animation-delay: 560ms; }
+
+  /* 2. Bouton Commander : un reflet passe régulièrement pour attirer l'œil */
+  .order-btn::before, .sticky-cta::before { animation: idle-shine 5.5s var(--ease) 2.2s infinite; }
+  .order-btn:hover::before, .sticky-cta:hover::before { animation: shine 1.5s ease-out infinite; }
+
+  /* 3. Apparition au défilement (classes ajoutées par script.js) */
+  .reveal { opacity: 0; transform: translateY(26px); }
+  .reveal.is-in {
+    opacity: 1; transform: none;
+    transition: opacity 600ms var(--ease) var(--reveal-delay, 0ms), transform 750ms var(--ease) var(--reveal-delay, 0ms);
+  }
+
+  /* 4. Total qui « rebondit » quand il change, photo qui se met au point au choix d'un goût */
+  .tk-total b { display: inline-block; }
+  .tk-total b.bump { animation: bump 450ms var(--ease); }
+  .slide img.settle { animation: settle 750ms var(--ease); }
+}
+@keyframes photo-in { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+@keyframes block-in-start { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+@keyframes block-in-end { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes idle-shine { 0%, 62% { transform: translateX(0); } 88%, 100% { transform: translateX(720px); } }
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@keyframes settle { from { opacity: 0.7; transform: scale(1.06); } to { opacity: 1; transform: none; } }
+[dir="rtl"] .gallery-coral { animation-name: block-in-end; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }

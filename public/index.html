@@ -6,11 +6,26 @@
   <title>Creatine Monohydrate Powder — Bulk Maroc</title>
   <meta name="description" content="Créatine monohydrate Bulk, sachet de 500 g en Unflavoured, Vanille ou Mixed Berry. 399 DH. Paiement à la livraison au Maroc." />
   <meta name="theme-color" content="#eef5db" />
+  <link rel="canonical" href="https://creatinebulkmaroc.cloud/" />
+  <!-- Aperçu du lien (WhatsApp, Facebook, Instagram, X) -->
+  <meta property="og:type" content="product" />
+  <meta property="og:site_name" content="Creatine Maroc" />
+  <meta property="og:locale" content="fr_MA" />
+  <meta property="og:locale:alternate" content="ar_MA" />
+  <meta property="og:url" content="https://creatinebulkmaroc.cloud/" />
+  <meta property="og:title" content="Créatine Monohydrate Bulk — 399 DH, paiement à la livraison" />
+  <meta property="og:description" content="Unflavoured, Vanille ou Mixed Berry. Livraison partout au Maroc, vous payez à la réception." />
+  <meta property="og:image" content="https://creatinebulkmaroc.cloud/assets/images/bulk-flatlay-all-flavors.jpg" />
+  <meta property="og:image:width" content="1152" />
+  <meta property="og:image:height" content="928" />
+  <meta property="og:image:alt" content="Les trois sachets de créatine Bulk : Vanille, Unflavoured et Mixed Berry" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" href="assets/images/bulk-logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Scoutie+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=14" />
+  <link rel="preload" as="image" href="assets/images/creatine-bulk-vanille.jpg?v=4" fetchpriority="high" />
+  <link rel="stylesheet" href="style.css?v=22" />
 </head>
 <body>
   <a class="skip-link" href="#commander" data-i18n="tkHead">Bon de commande</a>
@@ -39,10 +54,10 @@
         <span class="gallery-coral" aria-hidden="true"></span>
         <span class="gallery-tan" aria-hidden="true"></span>
         <div class="slides" id="slides" tabindex="0">
-          <figure class="slide" data-slide="vanilla"><img src="assets/images/creatine-bulk-vanille.jpg" alt="Sachet Bulk Creatine Monohydrate Vanille" width="1200" height="1200" fetchpriority="high" /></figure>
-          <figure class="slide" data-slide="mixedBerry"><img src="assets/images/creatine-bulk-mixed-berry.jpg" alt="Sachet Bulk Creatine Monohydrate Mixed Berry" width="1200" height="1200" loading="lazy" /></figure>
-          <figure class="slide" data-slide="unflavored"><img src="assets/images/creatine-bulk-sans-gout.jpg" alt="Sachet Bulk Creatine Monohydrate Unflavoured" width="1200" height="1200" loading="lazy" /></figure>
-          <figure class="slide" data-slide="all"><img src="assets/images/bulk-flatlay-all-flavors.png" alt="Les trois sachets Bulk : Unflavoured, Vanille et Mixed Berry" width="768" height="1376" loading="lazy" /></figure>
+          <figure class="slide" data-slide="vanilla"><img src="assets/images/creatine-bulk-vanille.jpg?v=4" alt="Sachet Bulk Creatine Monohydrate Vanille" width="1152" height="928" fetchpriority="high" /></figure>
+          <figure class="slide" data-slide="mixedBerry"><img src="assets/images/creatine-bulk-mixed-berry.jpg?v=4" alt="Sachet Bulk Creatine Monohydrate Mixed Berry" width="1152" height="928" loading="lazy" /></figure>
+          <figure class="slide" data-slide="unflavored"><img src="assets/images/creatine-bulk-sans-gout.jpg?v=3" alt="Sachet Bulk Creatine Monohydrate Unflavoured" width="1152" height="928" loading="lazy" /></figure>
+          <figure class="slide" data-slide="all"><img src="assets/images/bulk-flatlay-all-flavors.jpg?v=1" alt="Les trois sachets Bulk : Unflavoured, Vanille et Mixed Berry" width="1152" height="928" loading="lazy" /></figure>
         </div>
         <div class="dots" id="dots">
           <button type="button" class="dot" data-go="0" aria-label="Photo 1"></button>
@@ -74,9 +89,10 @@
 
       <!-- ================= BON DE COMMANDE (ticket) ================= -->
       <section class="order" id="commander" aria-labelledby="ticket-title">
-        <div class="ticket">
           <div id="order-area">
             <form id="order-form" novalidate>
+            <!-- Carte 1 : produit (format + goût) -->
+            <div class="ticket">
               <div class="tk-head">
                 <img src="assets/images/bulk-logo.png" alt="" width="939" height="475" />
                 <h2 class="tk-title" id="ticket-title"><span data-i18n="tkHead">BON DE COMMANDE</span> — <span data-i18n="tkProduct">CREATINE MONOHYDRATE POWDER</span></h2>
@@ -85,14 +101,18 @@
               <!-- 1. Format (sélecteur Uiverse adapté, voir .seg dans style.css) -->
               <fieldset class="tk-sec">
                 <legend class="tk-label" data-i18n="tkPack">1. FORMAT</legend>
-                <div class="seg" id="packs" style="--n: 2">
+                <div class="seg seg--pack" id="packs" style="--n: 3">
                   <label>
                     <input type="radio" name="pack" value="single" checked />
-                    <span><span data-i18n="w500">500 g</span> · <span data-price="single">399 DH</span></span>
+                    <span class="seg-two"><b data-i18n="w500">500 g</b><small data-price="single">399 DH</small></span>
                   </label>
                   <label>
                     <input type="radio" name="pack" value="double" />
-                    <span><span data-i18n="w1000">1 kg</span> · <span data-price="double">749 DH</span></span>
+                    <span class="seg-two"><b data-i18n="w1000">1 kg</b><small data-price="double">749 DH</small></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="pack" value="mix" />
+                    <span class="seg-two"><b data-i18n="wMix">Mix</b><small data-i18n="mixSub">jusqu'à 10 sachets</small></span>
                   </label>
                   <span class="selection" aria-hidden="true"></span>
                 </div>
@@ -101,7 +121,7 @@
               </fieldset>
 
               <!-- 2. Goût : un sélecteur par sachet (le 2e apparaît avec le format 1 kg) -->
-              <fieldset class="tk-sec">
+              <fieldset class="tk-sec" id="flavor-sec">
                 <legend class="tk-label" id="flavor-legend" data-i18n="tkFlavor">2. GOÛT</legend>
                 <div class="flavor-slot">
                   <p class="slot-label" id="slot1-label" data-i18n="sachet1" hidden>Sachet 1</p>
@@ -143,6 +163,43 @@
                 </div>
               </fieldset>
 
+              <!-- 2 bis. Mix : nombre de sachets par goût (format « Mix ») -->
+              <fieldset class="tk-sec" id="mix-sec" hidden>
+                <legend class="tk-label" data-i18n="tkMix">2. COMPOSEZ VOTRE MIX</legend>
+                <p class="mix-hint" data-i18n="mixHint">Choisissez combien de sachets de chaque goût.</p>
+                <ul class="mix" id="mix">
+                  <li class="mix-row" data-flavor="unflavored">
+                    <span class="mix-name"><span class="mix-dot" aria-hidden="true"></span><span data-i18n="flPlain">Unflavoured</span></span>
+                    <span class="stepper">
+                      <button type="button" class="step-btn" data-step="-1" aria-label="−">−</button>
+                      <output class="step-val" aria-live="polite">0</output>
+                      <button type="button" class="step-btn" data-step="1" aria-label="+">+</button>
+                    </span>
+                  </li>
+                  <li class="mix-row" data-flavor="vanilla">
+                    <span class="mix-name"><span class="mix-dot" aria-hidden="true"></span><span data-i18n="flVanilla">Vanille</span></span>
+                    <span class="stepper">
+                      <button type="button" class="step-btn" data-step="-1" aria-label="−">−</button>
+                      <output class="step-val" aria-live="polite">0</output>
+                      <button type="button" class="step-btn" data-step="1" aria-label="+">+</button>
+                    </span>
+                  </li>
+                  <li class="mix-row" data-flavor="mixedBerry">
+                    <span class="mix-name"><span class="mix-dot" aria-hidden="true"></span><span data-i18n="flBerry">Mixed Berry</span></span>
+                    <span class="stepper">
+                      <button type="button" class="step-btn" data-step="-1" aria-label="−">−</button>
+                      <output class="step-val" aria-live="polite">0</output>
+                      <button type="button" class="step-btn" data-step="1" aria-label="+">+</button>
+                    </span>
+                  </li>
+                </ul>
+                <p class="mix-sum" id="mix-sum"></p>
+                <p class="error" data-error-for="mix"></p>
+              </fieldset>
+            </div>
+
+            <!-- Carte 2 : coordonnées + total + bouton -->
+            <div class="ticket ticket--info">
               <!-- 3. Coordonnées -->
               <fieldset class="tk-sec">
                 <legend class="tk-label" data-i18n="tkInfo">3. VOS COORDONNÉES</legend>
@@ -178,11 +235,13 @@
                 <svg class="bulk-action-button__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path clip-rule="evenodd" fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"></path></svg>
               </button>
               <p class="fine" data-i18n="callNote">Nous vous appelons pour confirmer avant l'envoi.</p>
+              <p class="fine fine--privacy" data-i18n="privacyNote">Vos informations servent uniquement à traiter et livrer votre commande. Elles ne sont jamais partagées.</p>
+            </div>
             </form>
           </div>
 
-          <!-- Confirmation (dans le ticket) -->
-          <div class="success" id="success" tabindex="-1" hidden>
+          <!-- Confirmation (dans un ticket) -->
+          <div class="ticket success" id="success" tabindex="-1" hidden>
             <span class="ok-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></span>
             <p class="ok-title" data-i18n="okTitle">Commande reçue, merci !</p>
             <p class="ok-text" data-i18n="okText"></p>
@@ -195,7 +254,6 @@
             </div>
             <button type="button" class="ghost-btn" id="new-order" data-i18n="okNew">Passer une autre commande</button>
           </div>
-        </div>
       </section>
     </div>
 
@@ -225,8 +283,9 @@
           <div class="acc-panel rich" id="acc-5" role="region" aria-labelledby="acc-5-btn" data-i18n-html="accFaq" hidden></div>
         </div>
         <div class="acc">
-          <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="acc-6" id="acc-6-btn"><span data-i18n="accReviewsTitle">Avis</span><span class="acc-icon" aria-hidden="true"></span></button></h2>
-          <div class="acc-panel" id="acc-6" role="region" aria-labelledby="acc-6-btn" hidden>
+          <!-- Avis : toujours ouverts (pas de bouton pour les replier) -->
+          <h2 class="acc-btn acc-btn--static" id="acc-6-btn"><span data-i18n="accReviewsTitle">Avis</span></h2>
+          <div class="acc-panel" id="acc-6" role="region" aria-labelledby="acc-6-btn">
       <p class="section-sub" data-i18n="reviewsSub"></p>
       <!-- AVIS : vrais avis de clients, repris tels quels depuis l'ancienne boutique YouCan -->
       <ul class="review-list">
@@ -256,8 +315,8 @@
     <svg class="bulk-action-button__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path clip-rule="evenodd" fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"></path></svg>
   </a>
 
-  <script src="config.js?v=14"></script>
-  <script src="i18n.js?v=14"></script>
-  <script src="script.js?v=14"></script>
+  <script src="config.js?v=16"></script>
+  <script src="i18n.js?v=18"></script>
+  <script src="script.js?v=19"></script>
 </body>
 </html>

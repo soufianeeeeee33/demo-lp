@@ -20,7 +20,7 @@ const I18N = {
     kicker: "Bulk · Nutrition sportive",
     title: "Creatine Monohydrate Powder",
     lead: "La créatine monohydrate, l'un des compléments les plus étudiés en sport, dans un goût que vous aurez envie de reprendre chaque jour.",
-    highlights: `<li>Poudre de créatine 100 % pure.</li><li>Augmente la force et les performances physiques.</li><li>Stimule l'énergie en produisant de l'ATP.</li><li>3 g de créatine monohydrate, la dose quotidienne, pour une force améliorée.</li><li>100 % créatine, sans additifs inutiles.</li>`,
+    highlights: `<li>3 g de créatine monohydrate par dose.</li><li>Améliore les performances lors d'efforts courts et intenses (dès 3 g par jour).</li><li>Aide à recharger l'ATP, l'énergie de vos muscles.</li><li>Unflavoured : 100 % créatine, sans additif. Vanille et Mixed Berry : faciles à boire.</li><li>Se mélange à l'eau, à un jus ou dans votre shaker.</li>`,
     sub: "Sachet de 500 g · Unflavoured, Vanille ou Mixed Berry",
     trustCod: "Rien à payer avant la livraison",
     trustFee: "Livré chez vous pour {fee}",
@@ -32,6 +32,13 @@ const I18N = {
     tkFlavor: "2. GOÛT", tkFlavors: "2. GOÛTS — un par sachet", sachet1: "Sachet 1", sachet2: "Sachet 2", errFlavor2: "Choisissez le goût du 2e sachet.", tkItem2: "{f1} + {f2} · 2 sachets",
     tkPack: "1. FORMAT",
     tkInfo: "3. VOS COORDONNÉES",
+    wMix: "Mix", mixSub: "jusqu'à 10 sachets",
+    tkMix: "2. COMPOSEZ VOTRE MIX", mixHint: "Choisissez combien de sachets de chaque goût.",
+    mixEmpty: "Ajoutez vos sachets avec le bouton +.",
+    mixSum: "{n} sachets · {kg} kg · {price}", mixSum1: "1 sachet · 500 g · {price}",
+    mixMax: "Maximum {max} sachets par commande.", errMix: "Ajoutez au moins un sachet.",
+    mixLess: "Retirer un sachet {flavor}", mixMore: "Ajouter un sachet {flavor}",
+    mixPerPair: "Chaque paire de sachets au prix de {pair}.",
     flVanilla: "Vanille",
     flBerry: "Mixed Berry",
     flPlain: "Unflavoured",
@@ -54,6 +61,7 @@ const I18N = {
     orderBtn: "Commander maintenant",
     loading: "Enregistrement…",
     callNote: "Nous vous appelons pour confirmer avant l'envoi.",
+    privacyNote: "Vos informations servent uniquement à traiter et livrer votre commande. Elles ne sont jamais partagées.",
     stickyBtn: "Commander",
 
     errFlavor: "Choisissez un goût.",
@@ -167,27 +175,34 @@ const I18N = {
     galleryLabel: "صور المنتج",
 
     kicker: "Bulk · تغذية رياضية",
-    title: "مسحوق كرياتين مونوهيدرات",
+    title: "كرياتين مونوهيدرات",
     lead: "الكرياتين مونوهيدرات، من أكثر المكملات الرياضية دراسةً، بطعم ستحب أن تعود إليه كل يوم.",
-    highlights: `<li>مسحوق كرياتين نقي 100%.</li><li>يزيد القوة والأداء البدني.</li><li>يحفّز الطاقة عبر إنتاج ATP.</li><li>3 غ من الكرياتين مونوهيدرات، الجرعة اليومية، لقوة أفضل.</li><li>كرياتين 100%، بدون إضافات غير ضرورية.</li>`,
-    sub: "كيس 500 غرام · فانيلا، ميكسد بيري أو بدون نكهة",
+    highlights: `<li>3 غ من الكرياتين مونوهيدرات في كل جرعة.</li><li>يحسّن الأداء في التمارين القصيرة والمكثفة (ابتداءً من 3 غ يومياً).</li><li>يساعد على تجديد ATP، طاقة عضلاتك.</li><li>بدون نكهة: كرياتين 100% بدون إضافات. فانيلا وميكسد بيري: سهلة الشرب.</li><li>يذوب في الماء أو العصير أو الشيكر.</li>`,
+    sub: "500 غرام · فانيلا، ميكسد بيري أو بدون نكهة",
     trustCod: "لا تدفع شيئاً قبل الاستلام",
     trustFee: "التوصيل إلى بابك بـ {fee}",
     trustCall: "مكالمة لتأكيد الطلب، بدون مفاجآت",
 
     tkHead: "وصل الطلب",
-    tkProduct: "مسحوق كرياتين مونوهيدرات",
-    tkFlavor: "2. النكهة", tkFlavors: "2. النكهات — واحدة لكل كيس", sachet1: "الكيس 1", sachet2: "الكيس 2", errFlavor2: "اختر نكهة الكيس الثاني.", tkItem2: "{f1} + {f2} · كيسان",
+    tkProduct: "كرياتين مونوهيدرات",
+    tkFlavor: "2. النكهة", tkFlavors: "2. النكهات — نكهة لكل 500 غ", sachet1: "النكهة 1", sachet2: "النكهة 2", errFlavor2: "اختر النكهة الثانية.", tkItem2: "{f1} + {f2} · 1 كغ",
     tkPack: "1. الحجم",
     tkInfo: "3. معلوماتك",
+    wMix: "ميكس", mixSub: "حتى 5 كغ",
+    tkMix: "2. اختر تشكيلتك", mixHint: "اختر الكمية من كل نكهة، 500 غ في كل مرة.",
+    mixEmpty: "أضف الكمية بالزر +.",
+    mixSum: "{kg} كغ · {price}", mixSum1: "500 غ · {price}",
+    mixMax: "الحد الأقصى 5 كغ للطلب.", errMix: "أضف 500 غ على الأقل.",
+    mixLess: "أنقص 500 غ {flavor}", mixMore: "أضف 500 غ {flavor}",
+    mixPerPair: "كل 1 كغ بسعر {pair}.",
     flVanilla: "فانيلا",
     flBerry: "ميكسد بيري",
     flPlain: "بدون نكهة",
     w500: "500 غ",
     w1000: "1 كغ",
-    perUnit: "1 كغ = كيسان · {unit} للكيس · توفّر {save}",
-    unit1: "كيس واحد",
-    unit2: "كيسان",
+    perUnit: "1 كغ · {unit} لكل 500 غ · توفّر {save}",
+    unit1: "500 غ",
+    unit2: "1 كغ",
     tkItem: "{flavor} × {units}",
     tkNoFlavor: "اختر النكهة",
     nameLabel: "الاسم الكامل",
@@ -202,6 +217,7 @@ const I18N = {
     orderBtn: "اطلب الآن",
     loading: "جارٍ التسجيل…",
     callNote: "نتصل بك لتأكيد الطلب قبل الإرسال.",
+    privacyNote: "تُستخدم معلوماتك فقط لمعالجة طلبك وتوصيله، ولا تتم مشاركتها أبداً.",
     stickyBtn: "اطلب الآن",
 
     errFlavor: "اختر نكهة.",
@@ -225,9 +241,9 @@ const I18N = {
 
     detailsTitle: "كل ما تحتاج معرفته",
     dDesc: "المنتج",
-    dDescText: "كرياتين مونوهيدرات من Bulk على شكل مسحوق ناعم، في كيس 500 غرام. ثلاث نكهات: فانيلا، ميكسد بيري وبدون نكهة.",
+    dDescText: "كرياتين مونوهيدرات من Bulk، 500 غرام. ثلاث نكهات: فانيلا، ميكسد بيري وبدون نكهة.",
     dProduct: "طريقة الاستعمال",
-    dProductText: "جرعة واحدة في اليوم مع الماء أو الشيك. اتبع الجرعة المكتوبة على الكيس.",
+    dProductText: "جرعة واحدة في اليوم مع الماء أو الشيك. اتبع الجرعة المكتوبة على الملصق.",
     dDelivery: "التوصيل",
     dDeliveryText: "التوصيل داخل المغرب بـ {fee}. بعد طلبك، نتصل بك لتأكيد العنوان وموعد التوصيل.",
     dPayment: "الدفع عند الاستلام",
@@ -248,7 +264,7 @@ const I18N = {
       <h3>ملخص المنتج</h3>
       <p>كرّر التكرارات. ارفع أوزاناً أثقل. حسّن أداءك¹. يعزز الكرياتين إنتاج الطاقة في عضلاتك ويحسن أداءك في التمارين القصيرة والمكثفة: الدفعة التي تحتاجها لإضافة مجموعة أو تحطيم رقمك الشخصي. متوفر بنكهة الفانيلا، ميكسد بيري وبدون نكهة، ويُضاف إلى الشيك المعتاد.</p>
       <h3>ضمان الجودة من Bulk™</h3>
-      <p>يُختبر كرياتين مونوهيدرات من Bulk™ وفق معايير جودة صارمة. تُصنع كل دفعة مع الحرص على السلامة والنقاء والفعالية. المسحوق نقي بنسبة 99.9%.</p>
+      <p>يُختبر كرياتين مونوهيدرات من Bulk™ وفق معايير جودة صارمة. تُصنع كل دفعة مع الحرص على السلامة والنقاء والفعالية. الكرياتين نقي بنسبة 99.9%.</p>
       <h3>أهم المزايا</h3>
       <ul>
         <li>تحسين الأداء¹</li>
@@ -268,7 +284,7 @@ const I18N = {
       </ul>
       <p><strong>جرعة واحدة في اليوم.</strong></p>`,
     accIngr: `
-      <p><strong>بدون نكهة:</strong> كرياتين مونوهيدرات.<br /><strong>فانيلا وميكسد بيري:</strong> كرياتين مونوهيدرات ونكهات. القائمة الكاملة مكتوبة على ملصق الكيس.</p>
+      <p><strong>بدون نكهة:</strong> كرياتين مونوهيدرات.<br /><strong>فانيلا وميكسد بيري:</strong> كرياتين مونوهيدرات ونكهات. القائمة الكاملة مكتوبة على الملصق.</p>
       <h3>مناسب لـ</h3>
       <p>النباتيين، حلال، النباتيين الصرف (Vegan).</p>
       <h3>معلومات عن مسببات الحساسية</h3>
@@ -286,7 +302,7 @@ const I18N = {
           <tr><td>منها كرياتين</td><td>3 غ</td></tr>
         </tbody>
       </table>
-      <p class="note">قيم جرعة واحدة من النسخة بدون نكهة. نسختا الفانيلا وميكسد بيري توفّران أيضاً 3 غ من الكرياتين لكل جرعة (مكتوب على الكيس).</p>`,
+      <p class="note">قيم جرعة واحدة من النسخة بدون نكهة. نسختا الفانيلا وميكسد بيري توفّران أيضاً 3 غ من الكرياتين لكل جرعة (مكتوب على الملصق).</p>`,
     accFaq: `
       <h3>ما هو الكرياتين مونوهيدرات؟</h3>
       <p>هو الشكل الأكثر شيوعاً للكرياتين. ترتبط به جزيئة ماء واحدة، ومن هنا جاء اسم «مونوهيدرات». يحفّز إنتاج الطاقة في العضلات خلال التمارين القصيرة والمكثفة.</p>

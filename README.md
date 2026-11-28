@@ -119,7 +119,8 @@ Pensez à sauvegarder régulièrement `database/shop.db`.
 | Sélection par défaut | `public/config.js` → `DEFAULT_PACK`, `DEFAULT_FLAVOR` |
 | Frais de livraison | `public/config.js` → `DELIVERY_FEE` |
 | Logo | Remplacer `public/assets/images/bulk-logo.png` (PNG transparent conseillé) |
-| Image principale de la galerie | `public/assets/images/bulk-flatlay-all-flavors.png` (vignette : `bulk-flatlay-thumb.jpg`) |
+| Image principale de la galerie | `public/assets/images/bulk-flatlay-all-flavors.jpg` |
+| Format conseillé des photos | 5:4 horizontal, 1600 × 1280 px (min. 1200 × 960), JPG < 200 Ko |
 | Photos par parfum | `public/assets/images/creatine-bulk-vanille.jpg`, `creatine-bulk-mixed-berry.jpg`, `creatine-bulk-sans-gout.jpg` |
 | Textes des accordéons (Description, Détails, Livraison, Paiement) | `public/index.html`, bloc `#details` |
 | Téléphone affiché | `public/index.html`, commentaire `<!-- CONTACT -->` dans le footer |

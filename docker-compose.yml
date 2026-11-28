@@ -1,0 +1,40 @@
+# Site Bulk Maroc sur le VPS (à côté de n8n, derrière le même Traefik)
+# Emplacement sur le serveur : /docker/bulk-store
+# Mise en route / mise à jour : docker compose up -d --build
+
+services:
+  bulk-store:
+    build: .
+    container_name: bulk-store
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - PORT=3000
+      - TRUST_PROXY=1
+    volumes:
+      # Base des commandes + sauvegardes, en dehors du conteneur (jamais effacées par une mise à jour)
+      - ./data:/app/database
+    networks:
+      - n8n_default
+    labels:
+      - traefik.enable=true
+      # creatinebulkmaroc.cloud → site, en HTTPS (certificat Let's Encrypt automatique)
+      - traefik.http.routers.bulkstore.rule=Host(`creatinebulkmaroc.cloud`) || Host(`www.creatinebulkmaroc.cloud`)
+      - traefik.http.routers.bulkstore.entrypoints=websecure
+      - traefik.http.routers.bulkstore.tls=true
+      - traefik.http.routers.bulkstore.tls.certresolver=mytlschallenge
+      - traefik.http.routers.bulkstore.middlewares=bulkstore-www
+      - traefik.http.services.bulkstore.loadbalancer.server.port=3000
+      # www.creatinebulkmaroc.cloud → creatinebulkmaroc.cloud
+      - traefik.http.middlewares.bulkstore-www.redirectregex.regex=^https?://www\.creatinebulkmaroc\.cloud/(.*)
+      - traefik.http.middlewares.bulkstore-www.redirectregex.replacement=https://creatinebulkmaroc.cloud/$${1}
+      - traefik.http.middlewares.bulkstore-www.redirectregex.permanent=true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  n8n_default:
+    external: true

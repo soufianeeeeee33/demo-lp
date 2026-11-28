@@ -45,7 +45,16 @@
   const slides = $("#slides");
 
   const getChecked = (name) => { const el = $(`input[name="${name}"]:checked`, form); return el ? el.value : ""; };
-  const totalFor = (pack) => PRODUCTS[pack].price + (hasFee ? DELIVERY_FEE : 0);
+
+  /* Mix : nombre de sachets par goût */
+  const mix = { unflavored: 0, vanilla: 0, mixedBerry: 0 };
+  const mixTotal = (m = mix) => Object.values(m).reduce((a, b) => a + b, 0);
+  const subtotalFor = (pack, m = mix) => (pack === "mix" ? priceForQuantity(mixTotal(m)) : PRODUCTS[pack].price);
+  const compareFor = (pack, m = mix) => (pack === "mix" ? compareForQuantity(mixTotal(m)) : PRODUCTS[pack].compareAt);
+  const totalFor = (pack, m = mix) => subtotalFor(pack, m) + (hasFee ? DELIVERY_FEE : 0);
+  // "Vanille ×3 + Unflavoured ×2"
+  const mixText = (m = mix) => Object.keys(m).filter((k) => m[k] > 0)
+    .map((k) => `${t(FLAVOR_KEYS[k])} ×${m[k]}`).join(" + ") || t("tkNoFlavor");
 
   /* ---------- Textes ---------- */
   function applyLang() {
@@ -63,6 +72,11 @@
     const unit = PRODUCTS.double.price / 2;
     const save = PRODUCTS.single.price * 2 - PRODUCTS.double.price;
     $("#per-unit").textContent = t("perUnit", { unit: money(unit), save: money(save) });
+    $$(".mix-row").forEach((row) => {
+      const flavor = t(FLAVOR_KEYS[row.dataset.flavor]);
+      $('[data-step="-1"]', row).setAttribute("aria-label", t("mixLess", { flavor }));
+      $('[data-step="1"]', row).setAttribute("aria-label", t("mixMore", { flavor }));
+    });
     $$("[data-error-for]").forEach((el) => { if (el.dataset.msg) el.textContent = t(el.dataset.msg); });
     if (status.dataset.msg) status.textContent = t(status.dataset.msg);
     if (submitBtn.classList.contains("is-loading")) submitLabel.textContent = t("loading");
@@ -71,10 +85,38 @@
 
   /* Libellé de la ligne du ticket : 1 sachet, ou 2 sachets avec 1 ou 2 goûts */
   const flavorName = (k) => (k ? t(FLAVOR_KEYS[k]) : t("tkNoFlavor"));
-  function itemText(pack, f1, f2) {
+  function itemText(pack, f1, f2, m = mix) {
+    if (pack === "mix") return mixText(m);
     if (pack !== "double") return t("tkItem", { flavor: flavorName(f1), units: unitsText("single") });
     if (f1 && f2 && f1 === f2) return t("tkItem", { flavor: flavorName(f1), units: unitsText("double") });
     return t("tkItem2", { f1: flavorName(f1), f2: flavorName(f2) });
+  }
+
+  /* ---------- Animation des montants : le prix « défile » jusqu'à la nouvelle valeur ---------- */
+  const countEase = (x) => 1 - Math.pow(1 - x, 3);
+  function setMoney(el, value, { bump = false } = {}) {
+    const from = typeof el._money === "number" ? el._money : value;
+    el._money = value;
+    cancelAnimationFrame(el._raf);
+    if (reduceMotion || from === value || document.hidden) { el.textContent = money(value); return; }
+    const start = performance.now();
+    const dur = 480;
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / dur);
+      const v = p < 1 ? Math.round(from + (value - from) * countEase(p)) : value;
+      el.textContent = money(v);
+      if (p < 1) el._raf = requestAnimationFrame(step);
+    };
+    el._raf = requestAnimationFrame(step);
+    if (bump) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+  }
+
+  /* Photo : petit effet de mise au point quand le client choisit un goût */
+  function focusSlide(i) {
+    goSlide(i);
+    if (reduceMotion) return;
+    const img = $("img", slideEls[i]);
+    img.classList.remove("settle"); void img.offsetWidth; img.classList.add("settle");
   }
 
   /* ---------- Ticket : lignes, total, couleur du bouton ---------- */
@@ -82,25 +124,48 @@
   function update() {
     const pack = getChecked("pack") || "single";
     const isDouble = pack === "double";
-    const f1 = getChecked("flavor");
+    const isMix = pack === "mix";
+    const f1 = isMix ? "" : getChecked("flavor");
     const f2 = isDouble ? getChecked("flavor2") : "";
-    const p = PRODUCTS[pack];
 
     // Format 1 kg : un goût par sachet
     $("#slot2").hidden = !isDouble;
     $("#slot1-label").hidden = !isDouble;
     $("#flavor-legend").textContent = t(isDouble ? "tkFlavors" : "tkFlavor");
 
-    $("#hero-price").textContent = money(p.price);
-    $("#hero-compare").textContent = p.compareAt ? money(p.compareAt) : "";
+    // Format Mix : compteurs par goût à la place du choix de goût
+    $("#flavor-sec").hidden = isMix;
+    $("#mix-sec").hidden = !isMix;
+    $("#per-unit").textContent = isMix
+      ? t("mixPerPair", { pair: money(PRODUCTS.double.price) })
+      : t("perUnit", { unit: money(PRODUCTS.double.price / 2), save: money(PRODUCTS.single.price * 2 - PRODUCTS.double.price) });
+    const n = mixTotal();
+    $$(".mix-row").forEach((row) => {
+      const k = row.dataset.flavor;
+      $(".step-val", row).textContent = String(mix[k]);
+      $('[data-step="-1"]', row).disabled = mix[k] === 0;
+      $('[data-step="1"]', row).disabled = n >= MAX_QUANTITY;
+      row.classList.toggle("is-on", mix[k] > 0);
+    });
+    const kg = String(n * 0.5).replace(".", ",");
+    $("#mix-sum").textContent = n === 0 ? t("mixEmpty")
+      : (n === 1 ? t("mixSum1", { price: money(subtotalFor("mix")) }) : t("mixSum", { n, kg, price: money(subtotalFor("mix")) }))
+        + (n >= MAX_QUANTITY ? ` — ${t("mixMax", { max: MAX_QUANTITY })}` : "");
+
+    const sub = isMix && n === 0 ? 0 : subtotalFor(pack);
+    const cmp = isMix && n === 0 ? 0 : compareFor(pack);
+    const total = sub + (hasFee ? DELIVERY_FEE : 0);
+    setMoney($("#hero-price"), isMix && n === 0 ? PRODUCTS.single.price : sub);
+    $("#hero-compare").textContent = isMix && n === 0 ? money(PRODUCTS.single.compareAt) : (cmp ? money(cmp) : "");
     $("#tk-item").textContent = itemText(pack, f1, f2);
-    $("#tk-sub").textContent = money(p.price);
+    setMoney($("#tk-sub"), sub);
     $("#tk-fee").textContent = feeText();
-    $("#tk-total").textContent = money(totalFor(pack));
-    $("#sticky-price").textContent = money(totalFor(pack));
+    setMoney($("#tk-total"), total, { bump: true });
+    setMoney($("#sticky-price"), total);
 
     // Noir au départ, puis couleur du dernier goût choisi
-    if (lastFlavor && lastFlavor !== f1 && lastFlavor !== f2) lastFlavor = f2 || f1;
+    if (isMix) { if (lastFlavor && !mix[lastFlavor]) lastFlavor = Object.keys(mix).filter((k) => mix[k]).pop() || ""; }
+    else if (lastFlavor && lastFlavor !== f1 && lastFlavor !== f2) lastFlavor = f2 || f1;
     const color = lastFlavor || f1;
     [submitBtn, sticky].forEach((b) => {
       if (color) b.dataset.flavor = color; else delete b.dataset.flavor;
@@ -111,11 +176,24 @@
     const name = e.target.name;
     if (name !== "flavor" && name !== "flavor2" && name !== "pack") return;
     showError(name, "");
-    if (name === "pack") showError("flavor2", "");
+    if (name === "pack") { showError("flavor2", ""); showError("mix", ""); showError("flavor", ""); lastFlavor = ""; }
     if (name === "flavor" || name === "flavor2") {
       lastFlavor = e.target.value;
-      goSlide(SLIDE_INDEX[e.target.value]);
+      focusSlide(SLIDE_INDEX[e.target.value]);
     }
+    update();
+  });
+
+  // Compteurs du mix (− / +)
+  $("#mix").addEventListener("click", (e) => {
+    const btn = e.target.closest(".step-btn");
+    if (!btn || btn.disabled) return;
+    const k = btn.closest(".mix-row").dataset.flavor;
+    const step = Number(btn.dataset.step);
+    if (step > 0 && mixTotal() >= MAX_QUANTITY) return;
+    mix[k] = Math.max(0, mix[k] + step);
+    if (step > 0) { lastFlavor = k; focusSlide(SLIDE_INDEX[k]); }
+    showError("mix", "");
     update();
   });
 
@@ -147,7 +225,8 @@
   const PHONE_RE = /^(?:\+212|00212|0)[5-7]\d{8}$/;
   const cleanPhone = (v) => v.replace(/[\s.\-()]/g, "");
   const validators = {
-    flavor: () => (getChecked("flavor") ? "" : "errFlavor"),
+    flavor: () => (getChecked("pack") === "mix" || getChecked("flavor") ? "" : "errFlavor"),
+    mix: () => (getChecked("pack") !== "mix" || mixTotal() > 0 ? "" : "errMix"),
     flavor2: () => (getChecked("pack") !== "double" || getChecked("flavor2") ? "" : "errFlavor2"),
     pack: () => (getChecked("pack") ? "" : "errPack"),
     fullName: () => (form.full_name.value.trim().length >= 2 ? "" : "errName"),
@@ -161,13 +240,14 @@
   const fieldFor = {
     flavor: () => $("#flavors"),
     flavor2: () => $("#flavors2"),
+    mix: () => $("#mix"),
     pack: () => $("#packs"),
     fullName: () => form.full_name,
     phone: () => form.phone,
     address: () => form.address
   };
-  const CHOICES = ["flavor", "flavor2", "pack"];
-  const ORDER = ["pack", "flavor", "flavor2", "fullName", "phone", "address"];
+  const CHOICES = ["flavor", "flavor2", "pack", "mix"];
+  const ORDER = ["pack", "flavor", "flavor2", "mix", "fullName", "phone", "address"];
 
   function showError(name, msgKey) {
     const err = $(`[data-error-for="${name}"]`, form);
@@ -187,7 +267,8 @@
 
   function focusField(name) {
     const choice = CHOICES.includes(name);
-    const target = choice ? $(`input[name="${name}"]`, form) : fieldFor[name]();
+    const target = name === "mix" ? $('.step-btn[data-step="1"]', form)
+      : choice ? $(`input[name="${name}"]`, form) : fieldFor[name]();
     (choice ? fieldFor[name]() : target).scrollIntoView({ behavior: scrollBehavior, block: "center" });
     target.focus({ preventScroll: true });
   }
@@ -221,9 +302,10 @@
       fullName: form.full_name.value.trim(),
       phone: form.phone.value.trim(),
       address: form.address.value.trim(),
-      pack: getChecked("pack"),
-      flavor: getChecked("flavor")
+      pack: getChecked("pack")
     };
+    if (payload.pack === "mix") payload.mix = { ...mix };
+    else payload.flavor = getChecked("flavor");
     if (payload.pack === "double") payload.flavor2 = getChecked("flavor2");
 
     setLoading(true);
@@ -253,10 +335,9 @@
   });
 
   function onSuccess(data, payload) {
-    const p = PRODUCTS[payload.pack];
     $("#ok-id").textContent = data.orderId ? `#${data.orderId}` : "—";
-    $("#ok-item").textContent = itemText(payload.pack, payload.flavor, payload.flavor2);
-    $("#ok-sub").textContent = money(p.price);
+    $("#ok-item").textContent = itemText(payload.pack, payload.flavor, payload.flavor2, payload.mix);
+    $("#ok-sub").textContent = money(subtotalFor(payload.pack, payload.mix));
     $("#ok-fee").textContent = feeText();
     $("#ok-total").textContent = money(data.total);
     orderArea.hidden = true;
@@ -268,6 +349,7 @@
   $("#new-order").addEventListener("click", () => {
     // Le formulaire n'est vidé qu'après une commande réussie
     form.reset();
+    Object.keys(mix).forEach((k) => { mix[k] = 0; });
     lastFlavor = "";
     tried = false;
     ORDER.forEach((n) => showError(n, ""));
@@ -288,8 +370,27 @@
     }, { threshold: 0 }).observe($("#commander"));
   }
 
+  /* ---------- Apparition au défilement (bon de commande, infos, avis) ---------- */
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    const targets = $$("#order-form > .ticket, .details .acc, .review-list");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    const accs = $$(".details .acc");
+    targets.forEach((el) => {
+      el.classList.add("reveal");
+      // léger décalage entre accordéons voisins
+      if (accs.includes(el)) el.style.setProperty("--reveal-delay", `${accs.indexOf(el) * 60}ms`);
+      io.observe(el);
+    });
+  }
+
   /* ---------- Accordéons ---------- */
-  $$(".acc-btn").forEach((btn) => {
+  $$("button.acc-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const panel = document.getElementById(btn.getAttribute("aria-controls"));
       const open = btn.getAttribute("aria-expanded") === "true";

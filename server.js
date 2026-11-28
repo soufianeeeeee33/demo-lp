@@ -3,8 +3,10 @@
    Lancement : npm start  →  http://localhost:3000
    ===================================================================== */
 
+require("./env"); // clés privées (.env) : Telegram, Google Sheets
 const path = require("path");
 const express = require("express");
+const { notifyNewOrder, cfg: notifyCfg } = require("./notify");
 
 // Configuration partagée avec le navigateur (prix, livraison, villes)
 const {
@@ -17,6 +19,12 @@ const PORT = Number(process.env.PORT) || 3000;
 const app = express();
 
 app.disable("x-powered-by");
+
+// Derrière un proxy (Traefik sur le VPS) : utiliser la vraie IP du client,
+// sinon tous les clients auraient la même IP et la limite anti-abus les bloquerait ensemble.
+// TRUST_PROXY = nombre de proxys devant l'application (1 avec Traefik). Vide en local.
+const TRUST_PROXY = Number(process.env.TRUST_PROXY) || 0;
+if (TRUST_PROXY > 0) app.set("trust proxy", TRUST_PROXY);
 
 /* ---------- En-têtes de sécurité simples ---------- */
 app.use((req, res, next) => {
@@ -111,17 +119,38 @@ function validateOrder(body) {
     errors.address = "Entrez votre adresse de livraison.";
   }
 
-  // Quantité : compteur 1..MAX_QUANTITY (ancien format "pack" encore accepté)
-  let quantity = Number(b.quantity);
-  if (b.quantity === undefined && has(PRODUCTS, b.pack)) quantity = b.pack === "double" ? 2 : 1;
-  if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) {
-    errors.quantity = `Quantité entre 1 et ${MAX_QUANTITY}.`;
+  // Format « Mix » : nombre de sachets par goût, ex. { vanilla: 3, unflavored: 2 }
+  const isMix = b.pack === "mix";
+  let mixLabel = "";
+  let quantity;
+  if (isMix) {
+    const m = b.mix && typeof b.mix === "object" && !Array.isArray(b.mix) ? b.mix : {};
+    const parts = [];
+    let bad = Object.keys(m).some((k) => !has(FLAVORS, k));
+    quantity = 0;
+    for (const k of Object.keys(FLAVORS)) {
+      if (m[k] === undefined) continue;
+      const c = Number(m[k]);
+      if (!Number.isInteger(c) || c < 0 || c > MAX_QUANTITY) { bad = true; continue; }
+      if (c > 0) { quantity += c; parts.push(`${FLAVORS[k].name} ×${c}`); }
+    }
+    if (bad || quantity < 1 || quantity > MAX_QUANTITY) {
+      errors.mix = `Entre 1 et ${MAX_QUANTITY} sachets.`;
+    }
+    mixLabel = parts.join(" + ");
+  } else {
+    // Quantité : compteur 1..MAX_QUANTITY (ancien format "pack" encore accepté)
+    quantity = Number(b.quantity);
+    if (b.quantity === undefined && has(PRODUCTS, b.pack)) quantity = b.pack === "double" ? 2 : 1;
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) {
+      errors.quantity = `Quantité entre 1 et ${MAX_QUANTITY}.`;
+    }
+    if (!has(FLAVORS, b.flavor)) errors.flavor = "Choisissez un goût.";
   }
 
-  if (!has(FLAVORS, b.flavor)) errors.flavor = "Choisissez un goût.";
   // Pack de 2 sachets : un goût par sachet (le 2e goût reprend le 1er s'il n'est pas envoyé)
   let flavor2 = null;
-  if (quantity === 2 && b.flavor2 !== undefined) {
+  if (!isMix && quantity === 2 && b.flavor2 !== undefined) {
     if (has(FLAVORS, b.flavor2)) flavor2 = b.flavor2;
     else errors.flavor2 = "Choisissez le goût du 2e sachet.";
   }
@@ -144,7 +173,8 @@ function validateOrder(body) {
       city: city || null,
       pack: packNameForQuantity(quantity),
       // "Vanille" · "Vanille ×2" · "Unflavoured + Mixed Berry"
-      flavor: !flavor2 ? (quantity === 2 ? `${FLAVORS[b.flavor].name} ×2` : FLAVORS[b.flavor].name)
+      flavor: isMix ? mixLabel
+        : !flavor2 ?(quantity === 2 ? `${FLAVORS[b.flavor].name} ×2` : FLAVORS[b.flavor].name)
         : flavor2 === b.flavor ? `${FLAVORS[b.flavor].name} ×2`
         : `${FLAVORS[b.flavor].name} + ${FLAVORS[flavor2].name}`,
       quantity, unit_price, delivery_fee, total_price,
@@ -168,7 +198,9 @@ app.post("/api/orders", rateLimit, (req, res, next) => {
         errors
       });
     }
-    const { id } = orders.createOrder(order);
+    const { id, duplicate } = orders.createOrder(order);
+    // Alerte Telegram + ligne Google Sheets (une seule fois, même en cas de double clic)
+    if (!duplicate) notifyNewOrder(id, order);
     return res.status(201).json({
       success: true,
       message: "Commande enregistrée avec succès",
@@ -224,6 +256,8 @@ app.listen(PORT, () => {
   if (zero.length) {
     console.warn(`⚠️  ${zero.length} prix à 0 DH — modifiez-les dans public/config.js`);
   }
+  const n = notifyCfg();
+  console.log(`Notifications : Telegram ${n.tgToken && n.tgChat ? "activé" : "désactivé"} · Google Sheets ${n.sheetUrl ? "activé" : "désactivé"}`);
   if (!(DELIVERY_FEE > 0)) {
     console.log("Frais de livraison non définis (DELIVERY_FEE = 0) : affichés « à confirmer ».");
   }
